@@ -1,2 +1,7 @@
 # RoadbookGen
-Generate Rally Roadbook From Mapbox Directions API
+Création de Roadbook pour rallye. Utilise l'API Directions de Mapbox
+
+
+Préliminaire :
+
+Inscription (gratuite) auprès de Mapbox pour obtenir une clé d'accès.

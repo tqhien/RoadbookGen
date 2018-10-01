@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Roadbook Gen using Mapbox Directions API v0.1</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+  
+  <script src="html2pdf.bundle.min.js"></script>
+  
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+  <script src='myAPIKey.js'></script>
+
+  <script>
+    function switch_tablette_A4() {
+      var x = document.getElementById('directions_instructions');
+      var y = document.getElementById('directions_instructions_A4');
+      var z = document.getElementsByClassName('info-box');
+    	if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none" ;
+        z[0].style.left = '400px';
+      } else {
+        x.style.display = "none";
+        y.style.display = "block" ;
+        z[0].style.left = '800px';
+      }
+      //console.log('apercu_tablette_A4()');
+    }
+
+    function printPDF() {
+      var element = document.getElementById('instructions');
+      var opt = {
+        margin:       1,
+        filename:     'MonRoadbook.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { allowTaint:true},
+        jsPDF:        { unit: 'mm', format: [105,35], orientation: 'landscape'}
+      };
+      html2pdf().from(element).set(opt).save();
+      //console.log('printPDF()');
+    }
+    
+    function printPDF_A4() {
+      var element = document.getElementById('instructions_A4');
+      var opt = {
+        margin:       1,
+        filename:     'MonRoadbook_A4.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { allowTaint:true },
+        jsPDF:        { unit: 'mm', format: 'A4', orientation: 'portrait'}
+      };
+      html2pdf().from(element).set(opt).save();
+      //console.log('printPDF_A4()');
+    }
+	</script>
+
+  <style>
+    body { margin:0; padding:0; }
+    
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .info-box {
+      height: 150px;
+      width: 450px;
+      position: absolute;
+      top: 0px;
+      left:400px;
+      background-color: rgba(255, 255, 255, .9);
+      padding: 20px;
+      text-align: left;
+      font-family: 'Arial';
+      margin: 10;
+      font-size: 15px;
+      }
+    
+    #directions_instructions {
+      position: absolute; top: 0; bottom:0; left:0; width:400px; height:100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      overflow: auto ;
+      font-family: sans-serif;
+      }
+    
+    #instructions {
+      position:relative;
+      font-size:12px;
+      width:380px;
+      }
+
+    #directions_instructions_A4 {
+      position: absolute; top: 0; bottom:0; left:0; width:800px; height:100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      overflow: auto ;
+      font-family: sans-serif;
+      }
+
+    #instructions_A4 {
+      position:relative;
+      font-size:12px;
+      width:760px;
+      }
+  
+    table {
+      border: medium solid #6495ed;
+      border-collapse: collapse;
+      width: 380px;
+      }
+      
+    #instructable_A4 {
+      border: medium solid #6495ed;
+      border-collapse: collapse;
+      width: 760px;
+      }
+    
+    th {
+      font-family: monospace;
+      border: thin solid #6495ed;
+      padding: 0px;
+      background-color: #D0E3FA;
+      }
+      
+    td {
+      font-family: sans-serif;
+      border: thin solid #6495ed;
+      padding: 0px;
+      text-align: center;
+      background-color: #ffffff;
+      }
+      
+    caption {
+      font-family: sans-serif;
+      }
+      
+    .total_distance_header {
+      font-size: 10px;
+      text-align: center;
+      position: relative;
+      }
+    
+    .numero {
+      top:0px;
+      font-size: 10px;
+      text-align: left;
+      position: relative;
+      }
+      
+    .total_distance {
+      font-size: 40px;
+      text-align: center;
+      position: relative;
+      }
+     
+    .partial_distance {
+      position: relative;
+      font-size:10px;
+      bottom:0px;
+      text-align: right;
+      background-color: rgba(125,125,125,0.9);
+      }
+    
+    .space_distance {
+      position: relative;
+      height:20px;
+      }
+    
+    .route {
+      position: relative;
+      bottom:0px;
+      text-align: center;
+      font-size:15px;
+      background-color: rgba(125,125,125,0.9);
+      }  
+    
+    .img_direction {
+      width: 100px;
+      height:100px;
+      font-size: 25px;
+      text-align: center;
+      position: relative;
+      }
+  </style> 
+</head>
+<body>
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.3/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.3/mapbox-gl-directions.css' type='text/css' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css' type='text/css' />
+
+  <div id='map'></div>
+  <div class='info-box'>
+    <button type="button" title= "Tablette/Liseuse=1 page par case<br/>A4 = 2x10 cases par page" onclick="switch_tablette_A4();">Aperçu Tablette <-> A4</button>
+    <button type="button" onclick="printPDF();">Export PDF Tablette</button>
+    <button type="button" onclick="printPDF_A4();">Export PDF A4</button>
+    <p>Dessinez votre itinéraire avec les outils de dessin (25 étapes max)</p>
+    <div id='calculated-line'></div>
+  </div>
+
+  <div id='directions_instructions' >
+    <div id='instructions'>
+      <table id='instructable'>
+        <thead>
+        <tr>
+         <th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+         <th width=100px><div class="total_distance_header">Note</div></th>
+         <th width=180px><div class="total_distance_header">Description</div></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+           <th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+           <th width=100px><div class="total_distance_header">Note</div></th>
+           <th width=180px><div class="total_distance_header">Description</div></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+</div>
+
+<div id='directions_instructions_A4' style="display: none;">
+    <div id='instructions_A4'>
+      <table id='instructable_A4'>
+        <thead>
+        <tr>
+         <th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+         <th width=100px><div class="total_distance_header">Note</div></th>
+         <th width=180px><div class="total_distance_header">Description</div></th>
+<th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+         <th width=100px><div class="total_distance_header">Note</div></th>
+         <th width=180px><div class="total_distance_header">Description</div></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+           <th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+           <th width=100px><div class="total_distance_header">Note</div></th>
+           <th width=180px><div class="total_distance_header">Description</div></th>
+<th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th>
+           <th width=100px><div class="total_distance_header">Note</div></th>
+           <th width=180px><div class="total_distance_header">Description</div></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+  <script>
+  mapboxgl.accessToken = myMapBoxToken ;
+  var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/mapbox/streets-v9', //hosted style id
+    center: [2.882,46.853], // starting position
+    zoom: 5.72 // starting zoom
+    //minZoom: 11 // keep it local
+  });
+  
+  var draw = new MapboxDraw({
+    displayControlsDefault: false,
+    controls: {
+      line_string: true,
+      trash: true
+    },
+    styles: [
+      // ACTIVE (being drawn)
+      // line stroke
+      {
+        "id": "gl-draw-line",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+        "layout": {
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "#3b9ddd",
+          "line-dasharray": [0.2, 2],
+          "line-width": 4,
+          "line-opacity": 0.7
+        }
+      },
+      // vertex point halos
+      {
+        "id": "gl-draw-polygon-and-line-vertex-halo-active",
+        "type": "circle",
+        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+        "paint": {
+          "circle-radius": 10,
+          "circle-color": "#FFF"
+        }
+      },
+      // vertex points
+      {
+        "id": "gl-draw-polygon-and-line-vertex-active",
+        "type": "circle",
+        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+        "paint": {
+          "circle-radius": 6,
+          "circle-color": "#3b9ddd",
+        }
+      },
+    ]
+  });
+
+  // add the geocoding tool to the map
+  map.addControl(new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken
+    }));
+  
+  // add the draw tool to the map
+  map.addControl(draw);
+  
+  // Add zoom and rotation controls to the map.
+  map.addControl(new mapboxgl.NavigationControl());
+  
+  // add create, update, or delete actions
+  map.on('draw.create', updateRoute);
+  map.on('draw.update', updateRoute);
+  map.on('draw.delete', removeRoute);
+  map.on('load', function() {
+    map.getCanvas().focus();
+
+    map.getCanvas().addEventListener('keydown', function(e) {
+        e.preventDefault();
+        if (e.which === 38) { // up
+            console.log ('Up') ;
+        } else if (e.which === 40) { // down
+            console.log ('Down') ;
+        } else if (e.which === 45) { // Insert
+            console.log ('Insert') ;
+            // Change to cutlinemode
+        }
+    });
+  });
+
+  // use the coordinates you just drew to make your directions request
+  function updateRoute() {
+    removeRoute(); // overwrite any existing layers
+    var data = draw.getAll();
+    var answer = document.getElementById('calculated-line');
+    var lastFeature = data.features.length - 1;
+    var coords = data.features[lastFeature].geometry.coordinates;
+    var newCoords = coords.join(';')
+    getMatch(newCoords);
+  }
+
+  // make a directions request
+  function getMatch(e) {
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + e +'?geometries=geojson&steps=true&overview=full&exclude=motorway&language=fr&&access_token=' + mapboxgl.accessToken;
+    //console.log(url);
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+      var jsonResponse = req.response;
+      var distance = jsonResponse.routes[0].distance*0.001;
+      var duration = jsonResponse.routes[0].duration/60; 
+      var instructions = document.getElementById('instructable').getElementsByTagName('tbody')[0];
+      var legs = jsonResponse.routes[0].legs
+      var num_case = 0
+      var prev_dist = 0
+      var total_dist = 0
+      legs.forEach(function(leg) {
+        var steps = leg.steps;
+
+        // format tablette
+        steps.forEach(function(step) {
+          num_case = num_case+1;
+          if (step.maneuver.type == 'roundabout' || step.maneuver.type == 'rotary' || step.maneuver.type == 'roundabout turn' ) {
+            var n_exit = step.maneuver.exit ;
+            var bearing_out = step.intersections[n_exit].bearings[step.intersections[n_exit].out]-180;
+            var bearing_in = step.intersections[0].bearings[step.intersections[0].in];
+            var angle = Math.round((bearing_out-bearing_in)/15)*15 ;
+            if (angle < 0) { angle = (angle + 720) % 360 } ;
+            var png = 'direction_roundabout_' + angle + '.png';
+            var exit = step.maneuver.exit + 'e sortie / ' ;
+          } else {
+            var png = 'direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
+            var exit = '' ;
+          }
+          png = png.replace(/\s/g , "_");
+          png = png.replace(/_undefined/g,"");
+          new_row = instructions.insertRow(0) ;
+          new_row.insertAdjacentHTML('beforeend','<td width=100px><div class="numero">'+num_case.toFixed(0)+'</div><div class="total_distance">' + total_dist.toFixed(1)+' </div><div class="space_distance"></div><div class="partial_distance">'+prev_dist.toFixed(1)+'</div></td>');
+          new_row.insertAdjacentHTML('beforeend','<td width=100px><img src="./png/dark/' + png + '" alt = "'+png+'" style="width:100px;height:100px;"></td>');
+          new_row.insertAdjacentHTML('beforeend','<td width=180px><div class="instruction">' + step.maneuver.instruction + '</div><div class="space_distance"></div><div class="route">'+exit + step.name+'</div></td>');
+          new_row = instructions.insertRow(0)
+          new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
+          prev_dist= step.distance*0.001;
+          total_dist= total_dist + step.distance*0.001;
+        });
+      }) ;
+      new_row = instructions.insertRow(-1)
+      new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
+      document.getElementById('calculated-line').innerHTML = 'Distance: ' + distance.toFixed(2) + ' km<br>Temps de parcours: ' + duration.toFixed(2) + ' minutes<br>Nb de cases: ' + num_case.toFixed(0) ;
+
+      // format A4
+      var num_pages = Math.floor(num_case/20) ;
+      var table_A4 = document.getElementById('instructable_A4').getElementsByTagName('tbody')[0];
+      var reste_case = num_case % 20 ;
+
+      // Traitement des pages entières
+      for (i=0;i<num_pages;i++) {
+        for (j=0;j<10;j++) {
+          new_row_A4 = table_A4.insertRow(-1) ;
+          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(i*20+j+10)+1].innerHTML+instructions.rows[2*(i*20+j)+1].innerHTML) ;
+        }
+        new_row = table_A4.insertRow(-1)
+        new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
+      }
+
+      // Traitement de la page incomplète
+      var nb_colonne = Math.floor(reste_case/10) ;
+      var reste = reste_case % 10 ;
+      if (nb_colonne == 0) {
+        for (i=0;i<reste;i++) {
+          new_row_A4 = table_A4.insertRow(-1) ;
+          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(num_pages*20+i)+1].innerHTML) ;
+        }
+      } else {
+        for (i=0;i<reste;i++) {
+          new_row_A4 = table_A4.insertRow(-1) ;
+          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(num_pages*20+i+10)+1].innerHTML+instructions.rows[2*(num_pages*20+i)+1].innerHTML) ;
+        } ;
+        for (j= reste;j<10;j++) {
+          new_row_A4 = table_A4.insertRow(-1) ;
+          new_row_A4.insertAdjacentHTML('beforeend', '<td></td><td></td><td></td>'+instructions.rows[2*(num_pages*20+j)+1].innerHTML) ;
+        } ;     
+      } ;
+
+      var coords = jsonResponse.routes[0].geometry;
+      // add the route to the map
+      addRoute(coords);
+    };
+    req.send();
+  }
+
+  // adds the route as a layer on the map
+  function addRoute (coords) {
+    // check if the route is already loaded
+    if (map.getSource('route')) {
+      map.removeLayer('route')
+      map.removeSource('route')
+    } else{
+      map.addLayer({
+        "id": "route",
+        "type": "line",
+        "source": {
+          "type": "geojson",
+          "data": {
+            "type": "Feature",
+            "properties": {},
+            "geometry": coords
+          }
+        },
+        "layout": {
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-color": "#3b9ddd",
+          "line-width": 8,
+          "line-opacity": 0.8
+        }
+      });
+    }
+  }
+
+  // remove the layer if it exists
+  function removeRoute () {
+    if (map.getSource('route')) {
+      map.removeLayer('route');
+      map.removeSource('route');
+      document.getElementById('calculated-line').innerHTML = '';
+      document.getElementById('instructions').innerHTML='<table id="instructable"><thead><tr><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px>Note</th><th width=180px>Description</th></tr></thead><tbody></tbody><tfoot><tr><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px><div class="total_distance_header">Note</div></th><th width=180px><div class="total_distance_header">Description</div></th></tr></tfoot></table>';
+      document.getElementById('instructions_A4').innerHTML='<table id="instructable_A4"><thead><tr><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px>Note</th><th width=180px>Description</th><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px>Note</th><th width=180px>Description</th></tr></thead><tbody></tbody><tfoot><tr><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px><div class="total_distance_header">Note</div></th><th width=180px><div class="total_distance_header">Description</div></th><th width=100px><div class="total_distance_header">Distance Cumulée</div><p><div class="partial_distance">Partiel</div></th><th width=100px><div class="total_distance_header">Note</div></th><th width=180px><div class="total_distance_header">Description</div></th></tr></tfoot></table>';
+      } else  {
+      return;
+    }
+  }
+
+  </script>
+</body>
+</html>

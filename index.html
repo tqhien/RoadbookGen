@@ -2,31 +2,34 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>Roadbook Gen using Mapbox Directions API v0.1</title>
+  <title>Roadbook Gen using Mapbox Directions API v0.2</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
   
   <script src="html2pdf.bundle.min.js"></script>
   
-  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-  <script src='myAPIKey.js'></script>
+  <script src="turf.min.js"></script>
 
-  <script>
+  <script src="myAPIKey.js"></script>
+
+	<script>
     function switch_tablette_A4() {
       var x = document.getElementById('directions_instructions');
       var y = document.getElementById('directions_instructions_A4');
-      var z = document.getElementsByClassName('info-box');
+      var z1 = document.getElementsByClassName('info-box');
+      var z2 = document.getElementsByClassName('stats');
     	if (x.style.display === "none") {
         x.style.display = "block";
         y.style.display = "none" ;
-        z[0].style.left = '400px';
+        z1[0].style.left = '400px';
+        z2[0].style.left = '400px';
       } else {
         x.style.display = "none";
         y.style.display = "block" ;
-        z[0].style.left = '800px';
+        z1[0].style.left = '800px';
+        z2[0].style.left = '800px';
       }
-      //console.log('apercu_tablette_A4()');
     }
 
     function printPDF() {
@@ -39,7 +42,6 @@
         jsPDF:        { unit: 'mm', format: [105,35], orientation: 'landscape'}
       };
       html2pdf().from(element).set(opt).save();
-      //console.log('printPDF()');
     }
     
     function printPDF_A4() {
@@ -52,16 +54,16 @@
         jsPDF:        { unit: 'mm', format: 'A4', orientation: 'portrait'}
       };
       html2pdf().from(element).set(opt).save();
-      //console.log('printPDF_A4()');
     }
 	</script>
 
   <style>
     body { margin:0; padding:0; }
     
-    #map { position:absolute; top:0; bottom:0; width:100%; }
+    #map { position:absolute; top:0; bottom:0; left:400px; right:0px; }
+    
     .info-box {
-      height: 150px;
+      height: 125px;
       width: 450px;
       position: absolute;
       top: 0px;
@@ -72,6 +74,29 @@
       font-family: 'Arial';
       margin: 10;
       font-size: 15px;
+      }
+      
+    .stats {
+      height: 50px;
+      width: 300px;
+      position: absolute;
+      bottom: 25px;
+      left:400px;
+      background-color: rgba(255, 255, 255, .9);
+      padding: 20px;
+      text-align: left;
+      font-family: 'Arial';
+      margin: 10;
+      font-size: 15px;
+      }
+      
+    #apropos {
+      position: absolute; bottom:25px; right:0px; width:250px; height:35px;
+      background-color: rgba(255, 255, 255, 0.8);
+      text-align : center ;
+      font-size:14px;
+      font-family: sans-serif;
+      padding:5px;
       }
     
     #directions_instructions {
@@ -191,11 +216,26 @@
 
   <div id='map'></div>
   <div class='info-box'>
+    <b>RoadbookGen v0.2</b><br/>
     <button type="button" title= "Tablette/Liseuse=1 page par case<br/>A4 = 2x10 cases par page" onclick="switch_tablette_A4();">Aperçu Tablette <-> A4</button>
     <button type="button" onclick="printPDF();">Export PDF Tablette</button>
     <button type="button" onclick="printPDF_A4();">Export PDF A4</button>
-    <p>Dessinez votre itinéraire avec les outils de dessin (25 étapes max)</p>
+    <p>Cherchez votre adresse ou zone dans la barre de recherche
+    <br/>Dessinez votre itinéraire avec l'outil de dessin (25 étapes max)
+    <br/>Double-cliquez sur le trait pointillé pour rajouter une étape
+    <br/>Glissez-déposez pour ajuster son emplacement
+    <br/>Soyez prudent sur la route !</p>
+    
+  </div>
+  
+  <div class='stats'>
     <div id='calculated-line'></div>
+    <div id='info'></div>
+  </div>
+  
+  <div id='apropos'>
+    Pour tout contact et rapport de bugs :<br/>
+    <a href="https://github.com/tqhien/RoadbookGen">le dépôt Github du projet</a>
   </div>
 
   <div id='directions_instructions' >
@@ -255,10 +295,9 @@
   mapboxgl.accessToken = myMapBoxToken ;
   var map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/mapbox/streets-v9', //hosted style id
-    center: [2.882,46.853], // starting position
-    zoom: 5.72 // starting zoom
-    //minZoom: 11 // keep it local
+    style: 'mapbox://styles/mapbox/streets-v9', //style par défaut
+    center: [2.950,46.955], // position de départ
+    zoom: 5.58 // zoom initial
   });
   
   var draw = new MapboxDraw({
@@ -292,7 +331,7 @@
         "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
         "paint": {
           "circle-radius": 10,
-          "circle-color": "#FFF"
+          "circle-color": "#ff0066"
         }
       },
       // vertex points
@@ -307,7 +346,7 @@
       },
     ]
   });
-
+  
   // add the geocoding tool to the map
   map.addControl(new MapboxGeocoder({
       accessToken: mapboxgl.accessToken
@@ -323,9 +362,21 @@
   map.on('draw.create', updateRoute);
   map.on('draw.update', updateRoute);
   map.on('draw.delete', removeRoute);
+  
+  // pour debug, position du curseur
+  //map.on('mousemove', function (e) {
+    //document.getElementById('info').innerHTML =
+        // e.point is the x, y coordinates of the mousemove event relative
+        // to the top-left corner of the map
+        //JSON.stringify(e.point) + '<br />' +
+        // e.lngLat is the longitude, latitude geographical position of the event
+        //JSON.stringify(e.lngLat);
+  //});
+  
   map.on('load', function() {
     map.getCanvas().focus();
 
+    // pour test ajout d'évènement sur touche
     map.getCanvas().addEventListener('keydown', function(e) {
         e.preventDefault();
         if (e.which === 38) { // up
@@ -334,10 +385,101 @@
             console.log ('Down') ;
         } else if (e.which === 45) { // Insert
             console.log ('Insert') ;
-            // Change to cutlinemode
+            //draw.changeMode('cut_line');
         }
     });
   });
+  
+  // traitement du double clic
+  map.on('dblclick', function(e) {
+    const ids = draw.getFeatureIdsAt(e.point);
+    if (!ids.length) { return; }
+    
+    // TODO : traitement de l'erreur fin de saisie draw vs insert point
+    
+    // On récupère la ligne
+    const line = draw.get(ids[0]) ;
+    const old_line = line.geometry.coordinates ;
+    
+    // Positions du curseur et du noeud précédent
+    const cursorAt = turf.point([e.lngLat.lng, e.lngLat.lat]);
+    const snapped = turf.pointOnLine(line, cursorAt);
+    
+    // Insertion du point dans l'array de la linestring
+    // snapped.properties.index contient l'index du noeud précédent
+    old_line.splice(snapped.properties.index+1,0,cursorAt.geometry.coordinates) ;
+    
+    // Construction de la nouvelle ligne, en gardant le même id
+    var feature = {
+      id : ids[0],
+      type : 'Feature',
+      properties: {}, 
+      geometry : {type : 'LineString', coordinates: old_line }
+    } ;
+    
+    // On met à jour la ligne
+    var features = draw.add(feature) ;
+    
+    // On met à jour le roadbook
+    updateRoute() ;
+  });
+  
+  // Fonctions de dessin des giratoires
+  function drawlines(canvas, context,a){
+    // dessins des sorties (a) à laisser
+    context.beginPath();
+    context.lineWidth=5;
+    var x1 = 100 ; 
+    var y1 = 100 ;
+    var r =  25;
+    var offset = 40 ;
+    a.forEach(function(element) {
+      theta = element - 90 ; // up north
+      context.moveTo(x1 + offset * Math.cos(Math.PI * theta / 180.0), y1 + offset * Math.sin(Math.PI * theta / 180.0));
+      context.lineTo(x1 + (offset+r) * Math.cos(Math.PI * theta / 180.0), y1 + (offset+r) * Math.sin(Math.PI * theta / 180.0));
+      context.stroke();
+    });  
+  }
+
+  function drawarrow(canvas, context, onload,ang,a){
+    var imagePaper = new Image();
+    imagePaper.onload = function(){
+      // dessin de la flèche avec le bon angle
+      context.save() ;
+      context.translate(100,100) ;
+      context.rotate (Math.PI * ang / 180.0) ;
+      context.drawImage(imagePaper,-100, -100);
+      context.restore() ;
+      // dessin de la portion de rond point à parcourir
+      context.lineWidth=10;
+      context.beginPath();
+      context.arc(100,100,35,Math.PI * (ang-90) / 180.0, 0.5*Math.PI);
+      context.stroke();
+      // appel du dessin des sorties à laisser
+      onload(canvas, context,a);            
+    };
+    imagePaper.src = "png/dark/roundabout_arrow.png";
+  }
+
+  function drawbackground(canvas, context, onload,ang,a){
+    // Dessin du rond point de base
+    var imagePaper = new Image();
+    imagePaper.onload = function(){
+      context.drawImage(imagePaper,0, 0);
+      // appel du dessin de la flèche de sortie qui appellera les sorties à laisser
+      drawarrow(canvas,context,drawlines,ang,a) ;
+    };
+    imagePaper.src = "png/dark/roundabout_base.png"; 
+  }
+  
+  function drawimg(canvas, context, imurl){
+    // Dessin du rond point de base
+    var imagePaper = new Image();
+    imagePaper.onload = function(){
+      context.drawImage(imagePaper,0, 0);
+    };
+    imagePaper.src = imurl;
+  }
 
   // use the coordinates you just drew to make your directions request
   function updateRoute() {
@@ -353,7 +495,7 @@
   // make a directions request
   function getMatch(e) {
     var url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + e +'?geometries=geojson&steps=true&overview=full&exclude=motorway&language=fr&&access_token=' + mapboxgl.accessToken;
-    //console.log(url);
+    console.log(url);
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
@@ -362,6 +504,8 @@
       var distance = jsonResponse.routes[0].distance*0.001;
       var duration = jsonResponse.routes[0].duration/60; 
       var instructions = document.getElementById('instructable').getElementsByTagName('tbody')[0];
+      
+      // Début du traitement pour le roadbook
       var legs = jsonResponse.routes[0].legs
       var num_case = 0
       var prev_dist = 0
@@ -372,23 +516,57 @@
         // format tablette
         steps.forEach(function(step) {
           num_case = num_case+1;
-          if (step.maneuver.type == 'roundabout' || step.maneuver.type == 'rotary' || step.maneuver.type == 'roundabout turn' ) {
-            var n_exit = step.maneuver.exit ;
-            var bearing_out = step.intersections[n_exit].bearings[step.intersections[n_exit].out]-180;
-            var bearing_in = step.intersections[0].bearings[step.intersections[0].in];
-            var angle = Math.round((bearing_out-bearing_in)/15)*15 ;
-            if (angle < 0) { angle = (angle + 720) % 360 } ;
-            var png = 'direction_roundabout_' + angle + '.png';
-            var exit = step.maneuver.exit + 'e sortie / ' ;
-          } else {
-            var png = 'direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
-            var exit = '' ;
-          }
-          png = png.replace(/\s/g , "_");
-          png = png.replace(/_undefined/g,"");
           new_row = instructions.insertRow(0) ;
           new_row.insertAdjacentHTML('beforeend','<td width=100px><div class="numero">'+num_case.toFixed(0)+'</div><div class="total_distance">' + total_dist.toFixed(1)+' </div><div class="space_distance"></div><div class="partial_distance">'+prev_dist.toFixed(1)+'</div></td>');
-          new_row.insertAdjacentHTML('beforeend','<td width=100px><img src="./png/dark/' + png + '" alt = "'+png+'" style="width:100px;height:100px;"></td>');
+          
+          // Traitement des images boule flèche
+          // Ajout du canvas
+          new_row.insertAdjacentHTML('beforeend','<td width=100px><canvas id="myCanvas_' +num_case+ '" width=200 height=200  style="width:100px;height:100px;"></td>');
+          mycanvas = document.getElementById('myCanvas_'+num_case) ;
+          ctx = mycanvas.getContext ("2d") ;
+          
+          // Traitement des giratoires
+          if (step.maneuver.type == 'roundabout' || step.maneuver.type == 'rotary' || step.maneuver.type == 'roundabout turn' ) {
+            var bearing_in = step.intersections[0].bearings[step.intersections[0].in]-180;
+            var inters = step.intersections ;
+            //console.log(inters) ;
+            var n_exit = step.maneuver.exit
+            var n_inters = inters.length-1 ;
+            var sorties = [] ;
+            var l = 1 ;
+            do {
+              for (k=0;k<inters[l].entry.length;k++) {
+                if (k != inters[l].in && k != inters[l].out) {
+                  sorties.push(inters[l].bearings[k]-bearing_in) ; 
+                  if (inters[l].entry[k] == false) { 
+                    n_exit++ ;
+                  } ;
+                }
+              }
+              l++ ;
+            } while (l <= n_exit) ;
+            sorties.pop() ; // remove roundabout infinite circle
+            //console.log(sorties) ;
+            var bearing_out = step.intersections[n_exit].bearings[step.intersections[n_exit].out];
+            
+            //var bearing_out = step.maneuver.bearing_after ;
+            //var bearing_in = step.maneuver.bearing_before ;
+            var angle = Math.round((bearing_out-bearing_in)/15)*15 ;
+            angle = (angle + 720) % 360 ;
+            var png = 'direction_roundabout_' + angle + '.png';
+            var exit = step.maneuver.exit + 'e sortie / ' ;
+            png = png.replace(/\s/g , "_");
+            png = png.replace(/_undefined/g,"");
+            drawbackground(mycanvas, ctx, drawlines,angle,sorties);            
+          } else {
+            var png = 'png/dark/direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
+            var exit = '' ;
+            png = png.replace(/\s/g , "_");
+            png = png.replace(/_undefined/g,"");
+            drawimg (mycanvas,ctx,png) ;
+          }                             
+          
+          // Traitement des instructions
           new_row.insertAdjacentHTML('beforeend','<td width=180px><div class="instruction">' + step.maneuver.instruction + '</div><div class="space_distance"></div><div class="route">'+exit + step.name+'</div></td>');
           new_row = instructions.insertRow(0)
           new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
@@ -409,7 +587,11 @@
       for (i=0;i<num_pages;i++) {
         for (j=0;j<10;j++) {
           new_row_A4 = table_A4.insertRow(-1) ;
-          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(i*20+j+10)+1].innerHTML+instructions.rows[2*(i*20+j)+1].innerHTML) ;
+          new_html1 = instructions.rows[2*(i*20+j+10)+1].innerHTML ;
+          new_html1 = new_html1.replace(/myCanvas/g,"a4Canvas");
+          new_html2 = instructions.rows[2*(i*20+j)+1].innerHTML ;
+          new_html2 = new_html2.replace(/myCanvas/g,"a4Canvas");
+          new_row_A4.insertAdjacentHTML('beforeend', new_html1+new_html2) ;
         }
         new_row = table_A4.insertRow(-1)
         new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
@@ -421,18 +603,41 @@
       if (nb_colonne == 0) {
         for (i=0;i<reste;i++) {
           new_row_A4 = table_A4.insertRow(-1) ;
-          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(num_pages*20+i)+1].innerHTML) ;
+          new_html3 = instructions.rows[2*(num_pages*20+i)+1].innerHTML ;
+          new_html3 = new_html3.replace(/myCanvas/g,"a4Canvas");
+          new_row_A4.insertAdjacentHTML('beforeend', new_html3) ;
         }
       } else {
         for (i=0;i<reste;i++) {
           new_row_A4 = table_A4.insertRow(-1) ;
-          new_row_A4.insertAdjacentHTML('beforeend', instructions.rows[2*(num_pages*20+i+10)+1].innerHTML+instructions.rows[2*(num_pages*20+i)+1].innerHTML) ;
+          new_html1 = instructions.rows[2*(num_pages*20+i+10)+1].innerHTML ;
+          new_html1 = new_html1.replace(/myCanvas/g,"a4Canvas");
+          new_html2 = instructions.rows[2*(num_pages*20+i)+1].innerHTML ;
+          new_html2 = new_html2.replace(/myCanvas/g,"a4Canvas");
+          new_row_A4.insertAdjacentHTML('beforeend', new_html1+new_html2) ;
         } ;
         for (j= reste;j<10;j++) {
           new_row_A4 = table_A4.insertRow(-1) ;
-          new_row_A4.insertAdjacentHTML('beforeend', '<td></td><td></td><td></td>'+instructions.rows[2*(num_pages*20+j)+1].innerHTML) ;
+          new_html3 = instructions.rows[2*(num_pages*20+j)+1].innerHTML ;
+          new_html3 = new_html3.replace(/myCanvas/g,"a4Canvas");
+          new_row_A4.insertAdjacentHTML('beforeend', '<td></td><td></td><td></td>'+new_html3) ;
         } ;     
       } ;
+      for (m=1;m<=num_case;m++) {
+        //grab the context from your destination canvas
+        var destinationCanvas = document.getElementById('a4Canvas_'+m) ;
+        //console.log(destinationCanvas) ;
+        var sourceCanvas = document.getElementById('myCanvas_'+m) ;
+        //console.log(sourceCanvas) ;
+        var sourceCtx = sourceCanvas.getContext('2d');
+        var destinationCtx = destinationCanvas.getContext('2d');
+        destinationCtx.width = sourceCanvas.width ;
+        destinationCtx.height = sourceCanvas.height ;
+        var imag = sourceCtx.getImageData(0, 0, 200, 200);
+        destinationCtx.putImageData(imag,0,0) ;
+        
+        //console.log('copying'+m)
+      }
 
       var coords = jsonResponse.routes[0].geometry;
       // add the route to the map

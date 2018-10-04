@@ -30,7 +30,7 @@
         z1[0].style.left = '800px';
         z2[0].style.left = '800px';
       }
-    }
+    }   
 
     function printPDF() {
       var element = document.getElementById('instructions');
@@ -100,8 +100,8 @@
       }
     
     #directions_instructions {
-      position: absolute; top: 0; bottom:0; left:0; width:400px; height:100%;
-      background-color: rgba(255, 255, 255, 0.8);
+      position: absolute; top: 0; bottom:0; left:0; width:400px; 
+     background-color: rgba(255, 255, 255, 0.8);
       overflow: auto ;
       font-family: sans-serif;
       }
@@ -203,6 +203,7 @@
       text-align: center;
       position: relative;
       }
+
   </style> 
 </head>
 <body>
@@ -238,7 +239,7 @@
     <a href="https://github.com/tqhien/RoadbookGen">le dépôt Github du projet</a>
   </div>
 
-  <div id='directions_instructions' >
+  <div id='directions_instructions'>
     <div id='instructions'>
       <table id='instructable'>
         <thead>
@@ -516,57 +517,23 @@
         // format tablette
         steps.forEach(function(step) {
           num_case = num_case+1;
-          new_row = instructions.insertRow(0) ;
-          new_row.insertAdjacentHTML('beforeend','<td width=100px><div class="numero">'+num_case.toFixed(0)+'</div><div class="total_distance">' + total_dist.toFixed(1)+' </div><div class="space_distance"></div><div class="partial_distance">'+prev_dist.toFixed(1)+'</div></td>');
-          
-          // Traitement des images boule flèche
-          // Ajout du canvas
-          new_row.insertAdjacentHTML('beforeend','<td width=100px><canvas id="myCanvas_' +num_case+ '" width=200 height=200  style="width:100px;height:100px;"></td>');
-          mycanvas = document.getElementById('myCanvas_'+num_case) ;
-          ctx = mycanvas.getContext ("2d") ;
-          
-          // Traitement des giratoires
           if (step.maneuver.type == 'roundabout' || step.maneuver.type == 'rotary' || step.maneuver.type == 'roundabout turn' ) {
-            var bearing_in = step.intersections[0].bearings[step.intersections[0].in]-180;
-            var inters = step.intersections ;
-            //console.log(inters) ;
-            var n_exit = step.maneuver.exit
-            var n_inters = inters.length-1 ;
-            var sorties = [] ;
-            var l = 1 ;
-            do {
-              for (k=0;k<inters[l].entry.length;k++) {
-                if (k != inters[l].in && k != inters[l].out) {
-                  sorties.push(inters[l].bearings[k]-bearing_in) ; 
-                  if (inters[l].entry[k] == false) { 
-                    n_exit++ ;
-                  } ;
-                }
-              }
-              l++ ;
-            } while (l <= n_exit) ;
-            sorties.pop() ; // remove roundabout infinite circle
-            //console.log(sorties) ;
-            var bearing_out = step.intersections[n_exit].bearings[step.intersections[n_exit].out];
-            
-            //var bearing_out = step.maneuver.bearing_after ;
-            //var bearing_in = step.maneuver.bearing_before ;
+            var n_exit = step.maneuver.exit ;
+            var bearing_out = step.intersections[n_exit].bearings[step.intersections[n_exit].out]-180;
+            var bearing_in = step.intersections[0].bearings[step.intersections[0].in];
             var angle = Math.round((bearing_out-bearing_in)/15)*15 ;
-            angle = (angle + 720) % 360 ;
+            if (angle < 0) { angle = (angle + 720) % 360 } ;
             var png = 'direction_roundabout_' + angle + '.png';
             var exit = step.maneuver.exit + 'e sortie / ' ;
-            png = png.replace(/\s/g , "_");
-            png = png.replace(/_undefined/g,"");
-            drawbackground(mycanvas, ctx, drawlines,angle,sorties);            
           } else {
-            var png = 'png/dark/direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
+            var png = 'direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
             var exit = '' ;
-            png = png.replace(/\s/g , "_");
-            png = png.replace(/_undefined/g,"");
-            drawimg (mycanvas,ctx,png) ;
-          }                             
-          
-          // Traitement des instructions
+          }
+          png = png.replace(/\s/g , "_");
+          png = png.replace(/_undefined/g,"");
+          new_row = instructions.insertRow(0) ;
+          new_row.insertAdjacentHTML('beforeend','<td width=100px><div class="numero">'+num_case.toFixed(0)+'</div><div class="total_distance">' + total_dist.toFixed(1)+' </div><div class="space_distance"></div><div class="partial_distance">'+prev_dist.toFixed(1)+'</div></td>');
+          new_row.insertAdjacentHTML('beforeend','<td width=100px><img src="./png/dark/' + png + '" alt = "'+png+'" style="width:100px;height:100px;"></td>');
           new_row.insertAdjacentHTML('beforeend','<td width=180px><div class="instruction">' + step.maneuver.instruction + '</div><div class="space_distance"></div><div class="route">'+exit + step.name+'</div></td>');
           new_row = instructions.insertRow(0)
           new_row.insertAdjacentHTML('beforeend','<div class="html2pdf__page-break"></div>');
@@ -623,7 +590,7 @@
           new_row_A4.insertAdjacentHTML('beforeend', '<td></td><td></td><td></td>'+new_html3) ;
         } ;     
       } ;
-      for (m=1;m<=num_case;m++) {
+      /*for (m=1;m<=num_case;m++) {
         //grab the context from your destination canvas
         var destinationCanvas = document.getElementById('a4Canvas_'+m) ;
         //console.log(destinationCanvas) ;
@@ -637,7 +604,7 @@
         destinationCtx.putImageData(imag,0,0) ;
         
         //console.log('copying'+m)
-      }
+      }*/
 
       var coords = jsonResponse.routes[0].geometry;
       // add the route to the map

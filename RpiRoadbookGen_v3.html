@@ -665,11 +665,13 @@
           // Traitement des giratoires
           if (step.maneuver.type == 'roundabout' || step.maneuver.type == 'rotary' || step.maneuver.type == 'roundabout turn' ) {
             var exit = step.maneuver.exit + 'e sortie / ' ;
+            var png = 'png/dark/roundabout_'+step.maneuver.exit+'.png';
           } else {
             var exit = '' ;
+            var png = 'png/dark/direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
           } ;
 
-          var png = 'png/dark/direction_' +step.maneuver.type +'_' + step.maneuver.modifier + '.png';
+
           png = png.replace(/\s/g , "_");
           png = png.replace(/_undefined/g,"");
           drawimg (mycanvas,ctx,png) ;

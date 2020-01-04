@@ -8,6 +8,7 @@
 
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js'></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="font-awesome.min.css">
 
 
 
@@ -223,12 +224,67 @@
  <!-- Titre -->
   <div id='RbGen' class='w3-container w3-row'>
     <div class='w3-col m3 w3-light-blue'>
-      <div id='calculated-line'>Distance:  km<br>Temps de parcours:  minutes<br>Nb de cases: </div>
+      <div id='calculated-line'>Distance:  km<br>Temps de parcours:  minutes<br>Nb de cases/intersections: </div>
       <div id='info' class='stats'></div>
     </div>
-    <div class='w3-col m9 w3-center'>
-    <h1>RpiRoadbook RB Generator</h1>
-  </div>
+    <div class='w3-col m8 w3-center'>
+      <h1>RpiRoadbook RB Generator</h1>
+    </div>
+    <div class='w3-col m1 w3-right'>
+      <!-- Trigger/Open the Modal -->
+      <button onclick="document.getElementById('config').style.display='block'" class="w3-button w3-right"><i class="w3-xxlarge fa fa-gear"></i></button>
+      <!-- The Config Modal -->
+      <div id="config" class="w3-modal">
+        <div class="w3-modal-content">
+          <div class="w3-container">
+            <span onclick="document.getElementById('config').style.display='none'"
+            class="w3-button w3-display-topright">&times;</span>
+            <h2>Configuration des options</h2>
+            <hr>
+            <!-- Choix du mode -->
+            <form id="mode_form" class="w3-container w3-left">
+              Routage pour :
+              <input class="w3-radio" type="radio" name="mode_transport" value="vl" checked>
+              <label>Voiture/Moto</label>
+
+              <input class="w3-radio" type="radio" name="mode_transport" value="velo">
+              <label>V&eacute;lo</label>
+
+              <input class="w3-radio" type="radio" name="mode_transport" value="piéton">
+              <label>Pi&eacute;ton</label>
+            </form>
+            <!-- Option de routage -->
+            <form id="options_form" class="w3-container w3-left">
+              Restrictions :
+              <input class="w3-radio" type="radio" name="transport_options" value="toll">
+              <label>Eviter les p&eacute;ages</label>
+
+              <input class="w3-radio" type="radio" name="transport_options" value="motorway" checked>
+              <label>Eviter les autoroutes</label>
+
+              <input class="w3-radio" type="radio" name="transport_options" value="ferry">
+              <label>Eviter les ferries</label>
+
+              <input class="w3-radio" type="radio" name="transport_options" value="no_limit">
+              <label>Pas de restriction</label>
+            </form>
+            <br><br><br>
+            <hr>
+            <!-- Option de representation -->
+            <form id="schema_form" class="w3-container w3-left">
+              Repr&eacute;sentation :
+              <input class="w3-radio" type="radio" name="schema_options" value="boulefleche" checked>
+              <label>Boule-Fl&egrave;che</label>
+
+              <input class="w3-radio" type="radio" name="schema_options" value="fishbone">
+              <label>Allemand (ar&ecirc;te de poisson)</label>
+            </form>
+            <br><br>
+
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Barre de fonctions -->
@@ -285,22 +341,11 @@
       <div id='map' >
       </div>
     </div>
-    <!-- Choix du mode -->
-    <form id="mode_form" class="w3-container w3-left">
-      Mode de transport
-      <input class="w3-radio" type="radio" name="mode_transport" value="VL" checked>
-      <label>Voiture/Moto</label>
 
-      <input class="w3-radio" type="radio" name="mode_transport" value="velo">
-      <label>V&eacute;lo</label>
-
-      <input class="w3-radio" type="radio" name="mode_transport" value="piéton">
-      <label>Pi&eacute;ton</label>
-    </form>
     <!-- Trigger/Open the Modal -->
     <button onclick="document.getElementById('help_fr').style.display='block'" class="w3-button w3-right">Mode d'emploi</button>
 
-    <!-- The Modal -->
+    <!-- The Help Modal -->
     <div id="help_fr" class="w3-modal">
       <div class="w3-modal-content">
         <div class="w3-container">
@@ -323,22 +368,8 @@
         </div>
       </div>
     </div>
-    <!-- Option de routage -->
-    <form id="options_form" class="w3-container w3-left">
-      Options
-      <input class="w3-radio" type="radio" name="transport_options" value="toll">
-      <label>Pas de p&eacute;age</label>
 
-      <input class="w3-radio" type="radio" name="transport_options" value="motorway" checked>
-      <label>pas d'autoroute</label>
-
-      <input class="w3-radio" type="radio" name="transport_options" value="ferry">
-      <label>Pas de ferry</label>
-
-      <input class="w3-radio" type="radio" name="transport_options" value="no_limit">
-      <label>Pas de limitation</label>
-    </form>
-  </div>
+</div>
 
   <!-- Partie à propos et aide -->
   <div id='apropos' class='w3-container'>

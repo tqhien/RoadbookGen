@@ -64,7 +64,12 @@
     }
 
     function printPDF() {
-      var element = document.getElementById('instructions');
+      var schema_options = document.getElementById('schema_form').elements['schema_options'].value ;
+      if (schema_options == 'boulefleche') {
+        var element = document.getElementById('instructions');
+      } else {
+        var element = document.getElementById('instructions_fishbone');
+      }
       // Enable all 'modes', with no explicit elements.
       html2pdf().set({
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
@@ -81,7 +86,12 @@
     }
 
     function printPDF_A4() {
-      var element = document.getElementById('instructions_A4');
+      var schema_options = document.getElementById('schema_form').elements['schema_options'].value ;
+      if (schema_options == 'boulefleche') {
+        var element = document.getElementById('instructions_A4');
+      } else {
+        var element = document.getElementById('instructions_fishbone_A4');
+      }
       // Enable all 'modes', with no explicit elements.
       html2pdf().set({
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
@@ -947,13 +957,13 @@
                 document.getElementById('fishnumero_'+num_fish_case).innerHTML = (num_fish_case+1).toFixed(0) ;
                 var fishmycanvas = document.getElementById('fishmyCanvas_'+num_fish_case) ;
                 var fishctx = fishmycanvas.getContext ("2d") ;
-                document.getElementById('fishtotal_distance_'+num_fish_case).innerHTML = nb_left.toFixed(0) + 'L-R' + nb_right.toFixed(0) ;
+                //document.getElementById('fishtotal_distance_'+num_fish_case).innerHTML = nb_left.toFixed(0) + 'L-R' + nb_right.toFixed(0) ;
                 drawFish(fishmycanvas,fishctx,nb_left,nb_right) ;
 
                 document.getElementById('fisha4numero_'+num_fish_case).innerHTML = (num_fish_case+1).toFixed(0) ;
                 var fisha4mycanvas = document.getElementById('fisha4myCanvas_'+num_fish_case) ;
                 var fisha4ctx = fisha4mycanvas.getContext ("2d") ;
-                document.getElementById('fisha4total_distance_'+num_fish_case).innerHTML = nb_left.toFixed(0) + 'L-R' + nb_right.toFixed(0) ;
+                //document.getElementById('fisha4total_distance_'+num_fish_case).innerHTML = nb_left.toFixed(0) + 'L-R' + nb_right.toFixed(0) ;
                 drawFish(fisha4mycanvas,fisha4ctx,nb_left,nb_right) ;
 
                 num_fish_case = num_fish_case + 1 ;
@@ -964,13 +974,13 @@
                 document.getElementById('fishnumero_'+num_fish_case).innerHTML = (num_fish_case+1).toFixed(0) ;
                 var fishmycanvas = document.getElementById('fishmyCanvas_'+num_fish_case) ;
                 var fishctx = fishmycanvas.getContext ("2d") ;
-                document.getElementById('fishtotal_distance_'+num_fish_case).innerHTML = all_left.toFixed(0) + 'L-R' + all_right.toFixed(0) ;
+                //document.getElementById('fishtotal_distance_'+num_fish_case).innerHTML = all_left.toFixed(0) + 'L-R' + all_right.toFixed(0) ;
                 drawFish(fishmycanvas,fishctx,all_left,all_right) ;
 
                 document.getElementById('fisha4numero_'+num_fish_case).innerHTML = (num_fish_case+1).toFixed(0) ;
                 var fisha4mycanvas = document.getElementById('fisha4myCanvas_'+num_fish_case) ;
                 var fisha4ctx = fisha4mycanvas.getContext ("2d") ;
-                document.getElementById('fisha4total_distance_'+num_fish_case).innerHTML = all_left.toFixed(0) + 'L-R' + all_right.toFixed(0) ;
+                //document.getElementById('fisha4total_distance_'+num_fish_case).innerHTML = all_left.toFixed(0) + 'L-R' + all_right.toFixed(0) ;
                 drawFish(fisha4mycanvas,fisha4ctx,all_left,all_right) ;
 
                 num_fish_case = num_fish_case + 1 ;

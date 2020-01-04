@@ -18,6 +18,8 @@
 
   <script src="turf.min.js"></script>
 
+  <script src="myAPIKey.js"></script>
+
 	<script>
     function switch_tablette_A4() {
       var x = document.getElementById('directions_instructions');
@@ -454,7 +456,7 @@
 
 
   <script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoidHFoaWVuIiwiYSI6ImNqbHhqbHpieDFnem0zcW1wMzVnd3pmYm8ifQ.CZZQ6WrQVxDGxYHVv7EAxg';
+  mapboxgl.accessToken = myMapBoxToken ;
   var map = new mapboxgl.Map({
     container: 'map', // container id
     style: 'mapbox://styles/mapbox/streets-v9', //style par défaut

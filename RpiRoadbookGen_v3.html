@@ -107,6 +107,24 @@
       };
       html2pdf().from(element).set(opt).save();
     }
+
+    var slideIndex = 1;
+    //showDivs(slideIndex);
+
+    function plusDivs(n) {
+      showDivs(slideIndex += n);
+    }
+
+    function showDivs(n) {
+      var i;
+      var x = document.getElementsByClassName("mySlides");
+      if (n > x.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = x.length} ;
+      for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+      }
+      x[slideIndex-1].style.display = "block";
+    }
 	</script>
 
   <style>
@@ -418,7 +436,7 @@
     </div>
 
     <!-- Trigger/Open the Modal -->
-    <button onclick="document.getElementById('help_fr').style.display='block'" class="w3-button w3-right">Mode d'emploi</button>
+    <button onclick="document.getElementById('help_fr').style.display='block'" class="w3-button w3-right">Aide</button>
 
     <!-- The Help Modal -->
     <div id="help_fr" class="w3-modal">
@@ -426,20 +444,130 @@
         <div class="w3-container">
           <span onclick="document.getElementById('help_fr').style.display='none'"
           class="w3-button w3-display-topright">&times;</span>
-          <h2>Bienvenue sur le g&eacute;n&eacute;rateur de Roadbook</h2>
+          <h2>Aide du g&eacute;n&eacute;rateur de Roadbook</h2>
           <hr>
-          <p>Mode d'emploi du g&eacute;n&eacute;rateur de roadbook :</p>
-          <p>1- Saisissez l'adresse de départ dans la barre de recherche et CLIQUEZ sur l'adresse qui appara&icirc;t dessous</p>
-          <p>2- </p>
-          <p>3- Double-cliquez sur le dernier point de votre itinéraire pour générer le roadbook</p>
-          <p>&nbsp;</p>
-          <p>Edition du roadbook :</p>
-          <p>1- Double-cliquez sur le pointill&eacute; pour ajouter un point de passage sous la souris</p>
-          <p>2- Cliquez pour s&eacute;lectionner le nouveau point</p>
-          <p>3- Glissez et d&eacute;posez le point pour le placer au bon endroit</p>
-          <p>Le roadbook est mis &agrave; jour automatiquement</p>
-          <p>&nbsp;</p>
-          <p>Amusez-vous bien et soyez prudent sur la route !</p>
+          <div class="w3-content w3-display-container">
+            <div class="mySlides" style="display:block">
+              <img src="help/01-help.png" style="width:100%">
+              <div class="w3-display-middle w3-container w3-padding-16 w3-black">
+                  Bienvenue sur l'aide du G&eacute;n&eacute;rateur de Roadbook
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/02-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Commen&ccedil;ons notre roadbook ! Dans la bo&icirc;te de recherche en haut &agrave; droite,
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/03-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  entrez les premi&egrave;res lettres du lieu de d&eacute;part, puis cliquez sur la suggestion qui correspond.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/04-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  La carte va se d&eacute;placer au lieu choisi.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/05-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Affinez la localisation en d&eacute;plaçant la carte &agrave; la souris ou au clavier (fl&egrave;ches) et en zoomant (molette ou boutons + et - de la barre d'outils)
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/06-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Basculez dans le mode Saisie en s&eacute;lectionnant l'outil <bold>Ligne</bold>. La souris change de forme...
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/07-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  et cliquez sur le lieu du d&eacute;part. Une pastille appara&icirc;t
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/08-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  D&eacute;placez la carte vers le lieu suivant et cliquez sur le 2&egrave;me point de passage. R&eacute;p&eacute;tez pour les points suivants.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/09-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Double-cliquez pour marquer le point d'arriv&eacute;e. Le Roadbook appara&icirc;t sur la gauche.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/10-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Pour rajouter un point de passage, positionnez-vous sur la ligne pointill&eacute;e. Le curseur change de forme.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/11-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  et double-cliquez. Le Roadbook est recalcul&eacute;.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/12-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Pour d&eacute;placez un point au bon endroit : cliquez sur la pastille pour la sélectionner, puis glissez-déposez au nouvel emplacement.
+                  Pour le supprimer, s&eacute;lectionnez-le d'abord, puis cliquez sur la corbeille dans la barre d'outils
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/13-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Le menu Configuration vous permet de choisir le mode de calcul (voiture/v&eacute;lo/pi&eacute;ton), les restrictions et
+                  surtout le mode de repr&eacute;sentation du Roadbook : boule-fl&egrave;che (par d&eacute;faut) ou arête de poisson.
+                  Vous pouvez basculer de l'un à l'autre à tout moment.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/14-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Voici ce que donne le même itinéraire en arête de poisson.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/15-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Choisissez ensuite la mise en page qui vous convient.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/16-help.png" style="width:100%">
+              <div class="w3-display-topmiddle w3-container w3-padding-16 w3-black">
+                  En mode tablette, le PDF comporte une seule ligne par page.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/17-help.png" style="width:100%">
+              <div class="w3-display-topmiddle w3-container w3-padding-16 w3-black">
+                  En mode A4, chaque page comporte 2 colonnes de 9 lignes.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/18-help.png" style="width:100%">
+              <div class="w3-display-bottommiddle w3-container w3-padding-16 w3-black">
+                  Cliquez sur le bouton d'exportation selon le format pr&eacute;f&eacute;r&eacute; pour t&eacute;l&eacute;charger votre fichier PDF.
+              </div>
+            </div>
+            <div class="mySlides" style="display:none">
+              <img src="help/01-help.png" style="width:100%">
+              <div class="w3-display-middle w3-container w3-padding-16 w3-black">
+                  Amusez-vous bien et soyez prudent sur la route !
+              </div>
+            </div>
+
+            <button class="w3-button w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+            <button class="w3-button w3-display-right" onclick="plusDivs(+1)">&#10095;</button>
+        </div>
         </div>
       </div>
     </div>
@@ -449,8 +577,8 @@
   <!-- Partie à propos et aide -->
   <div id='apropos' class='w3-container'>
     <div class='w3-container w3-right'>
-    Pour tout contact et rapport de bugs :
-      <a href="https://github.com/tqhien/RoadbookGen">le dépôt Github du projet</a>
+      <p>Pour tout contact : rpiroadbook at gmail dot com</p>
+      <p>Pour les rapports de bugs : <a href="https://github.com/tqhien/RoadbookGen">le dépôt Github du projet</a></p>
     </div>
   </div>
 

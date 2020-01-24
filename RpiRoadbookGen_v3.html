@@ -286,6 +286,12 @@
     }
 
   #map { position:absolute; top:0; bottom:0; left:0px; right:0px; }
+  #mapmenu {
+    position: absolute;
+    background: #fff;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+  }
 
 
   </style>
@@ -460,6 +466,20 @@
     <div style='position:relative;height:90%'>
       <div id='map' >
       </div>
+      <div id="mapmenu">
+        <input
+          id="streets-v11"
+          type="radio"
+          name="rtoggle"
+          value="streets"
+          checked="checked"
+        />
+        <label for="streets">streets</label>
+        <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+        <label for="outdoors">outdoors</label>
+        <input id="satellite-streets-v11" type="radio" name="rtoggle" value="satellite" />
+        <label for="satellite">satellite</label>
+      </div>
     </div>
 
     <!-- Trigger/Open the Modal -->
@@ -618,6 +638,19 @@
     center: [2.950,46.955], // position de départ
     zoom: 14 // zoom initial
   });
+
+  // MapStyles
+  var layerList = document.getElementById('mapmenu');
+  var inputs = layerList.getElementsByTagName('input');
+
+  function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/mapbox/' + layerId);
+  }
+
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+  }
 
   var draw = new MapboxDraw({
     displayControlsDefault: false,

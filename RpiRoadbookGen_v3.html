@@ -87,6 +87,8 @@
       html2pdf().from(element).set(opt).save();
     }
 
+    var myDirections = '' ;
+
     function printPDF_A4() {
       var schema_options = document.getElementById('schema_form').elements['schema_options'].value ;
       if (schema_options == 'boulefleche') {
@@ -108,6 +110,28 @@
       html2pdf().from(element).set(opt).save();
     }
 
+    function savePoints() {
+      if (localStorage.myPoints != '' ) {
+        if ( ! confirm('RB déjà existant. Ecraser ?')) {
+            return ;
+        } ;
+      } ;
+      var features = draw.getAll();
+      // Keeping only last linestring
+      removed = features.features.splice(0,features.features.length-1) ;
+      localStorage.myPoints = JSON.stringify(features) ;
+      localStorage.myDirections = myDirections ;
+    }
+
+    function restorePoints() {
+      if (localStorage.myPoints != null) {
+        var features = JSON.parse(localStorage.myPoints) ;
+        myDirections = localStorage.myDirections ;
+        getMatch(myDirections) ;
+        draw.set(features) ;
+      } ;
+    }
+
     var slideIndex = 1;
     //showDivs(slideIndex);
 
@@ -125,6 +149,7 @@
       }
       x[slideIndex-1].style.display = "block";
     }
+
 	</script>
 
   <style>
@@ -348,6 +373,8 @@
     <button class='w3-bar-item w3-button w3-hover-green' type="button" title= "Tablette/Liseuse=1 page par case<br/>A4 = 2x10 cases par page" onclick="switch_tablette_A4();">Aperçu Tablette <-> A4</button>
     <button class='w3-bar-item w3-button w3-hover-red' type="button" onclick="printPDF();">Export PDF Tablette</button>
     <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="printPDF_A4();">Export PDF A4</button>
+    <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="savePoints();">Sauvegarder</button>
+    <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="restorePoints();">Restaurer</button>
   </div>
 
   <!-- Le Roadbook -->
@@ -840,6 +867,11 @@
 
   // make a directions request
   function getMatch(e) {
+    //Cleaning up linestrings
+    var features = draw.getAll();
+    // Keeping only last linestring
+    removed = features.features.splice(0,features.features.length-1) ;
+    draw.set(features) ;
     // get mode_transport
     var mode_transport = document.getElementById('mode_form').elements['mode_transport'].value ;
     if (mode_transport == 'velo') {
@@ -857,6 +889,8 @@
       if (transport_options == 'no_limit') { var exclusions = '' } else { var exclusions = '&exclude='+transport_options; }
     };
     url = url + e +'?geometries=geojson&steps=true&overview=full' + exclusions + '&language=fr&access_token=' + mapboxgl.accessToken;
+    myDirections = e ;
+    //console.log(myPoints) ;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);

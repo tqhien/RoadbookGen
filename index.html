@@ -716,6 +716,7 @@
   function switchLayer(layer) {
     var layerId = layer.target.id;
     map.setStyle('mapbox://styles/mapbox/' + layerId);
+    updateRoute() ;
   }
 
   for (var i = 0; i < inputs.length; i++) {

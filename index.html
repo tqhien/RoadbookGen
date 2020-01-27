@@ -447,6 +447,7 @@
           <form class="w3-container w3-left">
                 <input type="file" id="rbFileInput" onchange="handleRbFiles(this.files)" accept=".geoJSON">
                 <button onclick="document.getElementById('restore').style.display='none'" class='w3-bar-item w3-button w3-hover-blue w3-right' type="button">Annuler</button>
+                <button onclick="handleRbFiles(document.getElementById('rbFileInput').files)" class='w3-bar-item w3-green w3-button w3-hover-blue w3-right' type="button">Recharger</button>
           </form>
         </div>
       </div>

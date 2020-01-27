@@ -111,16 +111,30 @@
     }
 
     function savePoints() {
-      if (localStorage.myPoints != '' ) {
-        if ( ! confirm('RB déjà existant. Ecraser ?')) {
-            return ;
-        } ;
-      } ;
       var features = draw.getAll();
       // Keeping only last linestring
       removed = features.features.splice(0,features.features.length-1) ;
-      localStorage.myPoints = JSON.stringify(features) ;
+      myPoints = JSON.stringify(features) ;
+      // Saving on browser local storage
+      localStorage.myPoints = myPoints ;
       localStorage.myDirections = myDirections ;
+
+      // Download to file on client side
+      var file = new Blob([myDirections,'\r\n',myPoints], {type: 'text/plain'});
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, 'mesPoints.rbx');
+      else { // Others
+          var a = document.createElement("a"),
+                  url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = 'mesPoints.rbx';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+          }, 0);
+      }
     }
 
     function restorePoints() {
@@ -148,6 +162,44 @@
         x[i].style.display = "none";
       }
       x[slideIndex-1].style.display = "block";
+    }
+
+    function handleRbFiles(files) {
+    	// Check for the various File API support.
+    	if (window.FileReader) {
+    		// FileReader are supported.
+    		getAsText(files[0]);
+        document.getElementById('restore').style.display='none' ;
+    	} else {
+    		alert('FileReader are not supported in this browser.');
+    	}
+    }
+
+    function getAsText(fileToRead) {
+    	var reader = new FileReader();
+    	// Handle errors load
+    	reader.onload = loadHandler;
+    	reader.onerror = errorHandler;
+    	// Read file into memory as UTF-8
+    	reader.readAsText(fileToRead);
+    }
+
+    function loadHandler(event) {
+    	var rb = event.target.result;
+    	var allTextLines = rb.split(/\r\n|\n/);
+      var lines = [];
+      //first line is Directions
+      var myDirections = allTextLines.shift();
+    	var myPoints = allTextLines.shift();
+    	localStorage.myDirections = myDirections;
+    	localStorage.myPoints = myPoints;
+      restorePoints() ;
+    }
+
+    function errorHandler(evt) {
+    	if(evt.target.error.name == "NotReadableError") {
+    		alert("Fichier illisible!");
+    	}
     }
 
 	</script>
@@ -380,7 +432,22 @@
     <button class='w3-bar-item w3-button w3-hover-red' type="button" onclick="printPDF();">Export PDF Tablette</button>
     <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="printPDF_A4();">Export PDF A4</button>
     <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="savePoints();">Sauvegarder</button>
-    <button class='w3-bar-item w3-button w3-hover-blue' type="button" onclick="restorePoints();">Restaurer</button>
+    <button onclick="document.getElementById('restore').style.display='block'" class='w3-bar-item w3-button w3-hover-blue' type="button">Restaurer</button>
+    <!-- The Restore Modal -->
+    <div id="restore" class="w3-modal w3-text-black">
+      <div class="w3-modal-content">
+        <div class="w3-container">
+          <span onclick="document.getElementById('restore').style.display='none'"
+          class="w3-button w3-display-topright">&times;</span>
+          <h2>Choix du fichier RBX &agrave; restaurer :</h2>
+          <hr>
+          <form class="w3-container w3-left">
+                <input type="file" id="rbFileInput" onchange="handleRbFiles(this.files)" accept=".rbx">
+                <button onclick="document.getElementById('restore').style.display='none'" class='w3-bar-item w3-button w3-hover-blue w3-right' type="button">Annuler</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Le Roadbook -->

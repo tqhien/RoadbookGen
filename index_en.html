@@ -2,76 +2,76 @@
 <html>
 <head>
   <script type="text/javascript">
-    var language = 'fr';
-    var str_title = 'G&eacute;n&eacute;rateur de Roadbook v0.4';
+    var language = 'en';
+    var str_title = 'Roadbook generator v0.4';
     var str_distance = 'Distance:';
     var str_distance_unit = ' km';
-    var str_timetravel = 'Temps de parcours:';
+    var str_timetravel = 'Travel time: ';
     var str_timetravel_unit = ' minutes';
-    var str_nblines_intersections = 'Nb de cases/intersections: ';
-    var str_menu_preview_switch = 'Aper&ccedil;u Tablette <-> A4' ;
-    var str_menu_preview_mouseover = 'Tablette/Liseuse=1 page par case<br/>A4 = 2x10 cases par page';
-    var str_menu_export_tablet = 'Export PDF Tablette' ;
+    var str_nblines_intersections = 'Nb lines/intersections: ';
+    var str_menu_preview_switch = 'Switch preview Tablet <-> A4' ;
+    var str_menu_preview_mouseover = 'Tablet=1 page per line<br/>A4 = 2x10 lines per page';
+    var str_menu_export_tablet = 'Tablet PDF Export' ;
     var str_menu_tablet_mouseover = '';
-    var str_menu_export_A4 = 'Export PDF A4';
+    var str_menu_export_A4 = 'A4 PDF Export';
     var str_menu_A4_mouseover ='';
-    var str_menu_save = 'Sauvegarder';
-    var str_menu_load = 'Restaurer';
-    var str_default_filename = 'MonRoadbook_' ;
-    var str_option_title = 'Configuration des options';
-    var str_option_directions = 'Routage pour :';
-    var str_option_car = 'Voiture/Moto';
-    var str_option_bike = 'V&eacute;lo';
-    var str_option_pedestrian = 'Pi&eacute;ton';
+    var str_menu_save = 'Save';
+    var str_menu_load = 'Load';
+    var str_default_filename = 'MyRoadbook_' ;
+    var str_option_title = 'Option config';
+    var str_option_directions = 'Route for :';
+    var str_option_car = 'Driving';
+    var str_option_bike = 'Bike';
+    var str_option_pedestrian = 'Walking';
     var str_option_restritions = 'Restrictions : ';
-    var str_option_avoid_toll = 'Eviter les p&eacute;ages';
-    var str_option_avoid_highway = 'Eviter les autoroutes';
-    var str_option_avoid_ferry = 'Eviter les ferries';
-    var str_option_no_avoid = 'Pas de restrictions';
-    var str_render = 'Repr&eacute;sentation :';
-    var str_render_arrow = 'Boule-Fl&egrave;che';
-    var str_render_fishbone = 'Allemand (ar&ecirc;te de poisson)'
-    var str_rb_total_distance = 'Distance cumul&eacute;e';
-    var str_rb_partial_distance = 'Partiel';
+    var str_option_avoid_toll = 'No toll';
+    var str_option_avoid_highway = 'No highway';
+    var str_option_avoid_ferry = 'No ferries';
+    var str_option_no_avoid = 'No restriction';
+    var str_render = 'Symbology :';
+    var str_render_arrow = 'Arrows';
+    var str_render_fishbone = 'Fishbone'
+    var str_rb_total_distance = 'Total Distance';
+    var str_rb_partial_distance = 'Partial';
     var str_rb_note = 'Note';
     var str_rb_description = 'Description';
-    var str_rb_ith_out = 'e sortie / ';
-    var str_map_road = 'routes';
-    var str_map_hiking = 'rando';
+    var str_rb_ith_out = 'th out / ';
+    var str_map_road = 'roads';
+    var str_map_hiking = 'hiking';
     var str_map_satellite = 'satellite';
-    var str_map_find = 'Chercher';
-    var str_help = 'Aide';
-    var str_help_title = 'Aide du g&eacute;n&eacute;rateur de Roadbook';
-    var str_help_page01 = "Bienvenue sur l'aide du G&eacute;n&eacute;rateur de Roadbook";
-    var str_help_page02 = "Commen&ccedil;ons notre roadbook ! Dans la bo&icirc;te de recherche en haut &agrave; droite,";
-    var str_help_page03 = "entrez les premi&egrave;res lettres du lieu de d&eacute;part, puis cliquez sur la suggestion qui correspond.";
-    var str_help_page04 = "La carte va se d&eacute;placer au lieu choisi.";
-    var str_help_page05 = "Affinez la localisation en d&eacute;plaçant la carte &agrave; la souris ou au clavier (fl&egrave;ches) et en zoomant (molette ou boutons + et - de la barre d'outils)";
-    var str_help_page06 = "Basculez dans le mode Saisie en s&eacute;lectionnant l'outil <bold>Ligne</bold>. La souris change de forme...";
-    var str_help_page07 = "et cliquez sur le lieu du d&eacute;part. Une pastille appara&icirc;t";
-    var str_help_page08 = "D&eacute;placez la carte vers le lieu suivant et cliquez sur le 2&egrave;me point de passage. R&eacute;p&eacute;tez pour les points suivants.";
-    var str_help_page09 = "Double-cliquez pour marquer le point d'arriv&eacute;e. Le Roadbook appara&icirc;t sur la gauche.";
-    var str_help_page10 = "Pour rajouter un point de passage, positionnez-vous sur la ligne pointill&eacute;e. Le curseur change de forme.";
-    var str_help_page11 = "et double-cliquez. Le Roadbook est recalcul&eacute;.";
-    var str_help_page12 = "Pour d&eacute;placez un point au bon endroit : cliquez sur la pastille pour la sélectionner, puis glissez-déposez au nouvel emplacement.\
-    Pour le supprimer, s&eacute;lectionnez-le d'abord, puis cliquez sur la corbeille dans la barre d'outils";
-    var str_help_page13 = "Le menu Configuration vous permet de choisir le mode de calcul (voiture/v&eacute;lo/pi&eacute;ton), les restrictions et \
-surtout le mode de repr&eacute;sentation du Roadbook : boule-fl&egrave;che (par d&eacute;faut) ou arête de poisson. \
-Vous pouvez basculer de l'un à l'autre à tout moment.";
-    var str_help_page14 = "Voici ce que donne le même itinéraire en arête de poisson.";
-    var str_help_page15 = "Choisissez ensuite la mise en page qui vous convient.";
-    var str_help_page16 = "En mode tablette, le PDF comporte une seule ligne par page.";
-    var str_help_page17 = "En mode A4, chaque page comporte 2 colonnes de 9 lignes.";
-    var str_help_page18 = "Cliquez sur le bouton d'exportation selon le format pr&eacute;f&eacute;r&eacute; pour t&eacute;l&eacute;charger votre fichier PDF.";
-    var str_help_end = "Amusez-vous bien et soyez prudent sur la route !";
+    var str_map_find = 'Find';
+    var str_help = 'Help';
+    var str_help_title = "Roadbook Generator help";
+    var str_help_page01 = "Welcome to the Roadbook Generator";
+    var str_help_page02 = "Let's begin our roadbook ! In the search box, at the upper right corner";
+    var str_help_page03 = "enter the first letters of the departure, then click on the suggested place";
+    var str_help_page04 = "Map will zoom to the selected place";
+    var str_help_page05 = "Move/Zoom to the correct departure, with mouse or keyboard (arrows and + - keys)";
+    var str_help_page06 = "Select the <bold>Line</bold> tool to switch to edit mode. Mouse cursor will change...";
+    var str_help_page07 = "and click on the departure place. A circle will appear";
+    var str_help_page08 = "Pan/zoom the map to next waypoint and click where it should be. Repeat for all waypoints";
+    var str_help_page09 = "Double-click for the arrival waypoint. Roadbook will appear on the left.";
+    var str_help_page10 = "To insert a waypoint, put your mouse over the dotted line. Mouse cursor will change...";
+    var str_help_page11 = "and double-click. Roadbook will be updated.";
+    var str_help_page12 = "To move a waypoint : click on the circle to select it, then drag and drop it to the new place.\
+    To remove it, first select it, then click on the trash icon in the toolbar";
+    var str_help_page13 = "The config menu lets you choose routing options (driving/bike/walking), restrictions and \
+symbology of the roadbook : arrows (default) or fishbone. \
+You can switch at anytime, roadbook will be updated accordingly.";
+    var str_help_page14 = "Here is the same raodbook in fishbone symbology.";
+    var str_help_page15 = "Select page setup.";
+    var str_help_page16 = "In tablet mode, each page of the resulting PDF will contain only one roadbook line";
+    var str_help_page17 = "In A4 mode, each PDF page will contain 2 columns of 9 lines.";
+    var str_help_page18 = "Click on the export button depending your preferred choice. It will download your roadbook.";
+    var str_help_end = "Have fun and be careful while driving/riding !";
 
 
-    var str_contact = 'Pour tout contact : rpiroadbook at gmail dot com';
-    var str_git_link = 'Pour les rapports de bugs : <a href="https://github.com/tqhien/RoadbookGen">le dépôt Github du projet</a>';
-    var str_error_file_unreadable = 'Fichier illisible';
-    var str_json_load = 'Choix du fichier geoJSON &agrave; restaurer :';
-    var str_button_cancel = 'Annuler';
-    var str_button_reload = 'Recharger';
+    var str_contact = 'Contact : rpiroadbook at gmail dot com';
+    var str_git_link = 'Bug reports : <a href="https://github.com/tqhien/RoadbookGen">the project Github</a>';
+    var str_error_file_unreadable = 'File unreadable';
+    var str_json_load = 'Choose a geoJSON file to restore :';
+    var str_button_cancel = 'Cancel';
+    var str_button_reload = 'Load';
   </script>
   <meta charset='utf-8' />
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -571,7 +571,7 @@ Vous pouvez basculer de l'un à l'autre à tout moment.";
     <!-- <a href="index_es.html" class="w3-button w3-black w3-right">ES</a>
     <a href="index_it.html" class="w3-button w3-black w3-right">IT</a>
     <a href="index_de.html" class="w3-button w3-black w3-right">DE</a> -->
-    <a href="index_en.html" class="w3-button w3-black w3-right">EN</a>
+    <a href="index.html" class="w3-button w3-black w3-right">FR</a>
   </div>
 
   <!-- Le Roadbook -->
